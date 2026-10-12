@@ -1,0 +1,244 @@
+SQL*Plus: Release 11.2.0.1.0 Production on Mon Oct 12 10:50:47 2026
+
+Copyright (c) 1982, 2010, Oracle.  All rights reserved.
+
+Enter user-name: A173@db2021
+Enter password:
+
+Connected to:
+Oracle Database 11g Release 11.2.0.1.0 - Production
+
+SQL> create table emp
+  2  (
+  3  emp_id number(5),
+  4  emp_name varchar2(30),
+  5  dept varchar2(5),
+  6  salary number(10)
+  7  );
+
+Table created.
+
+SQL> insert into emp values(101,'arun','cse',45000);
+
+1 row created.
+
+SQL> insert into emp values(102,'kavi','ece',50000);
+
+1 row created.
+
+SQL> insert into emp values(103,'bala','it',55000);
+
+1 row created.
+
+SQL> insert into emp values(104,'divya','cse',50000);
+
+1 row created.
+
+SQL> insert into emp values(105,'geetha','ece',45000);
+
+1 row created.
+
+SQL> insert into emp values(106,'girija','it',55000);
+
+1 row created.
+
+SQL> select sum(salary) as total_salary from emp;
+
+TOTAL_SALARY
+------------
+      300000
+
+SQL> select avg(salary) as average_salary from emp;
+
+AVERAGE_SALARY
+--------------
+         50000
+
+SQL> select max(salary) as highest_salary from emp;
+
+HIGHEST_SALARY
+--------------
+         55000
+
+SQL> select min(salary) as lowest_salary from emp;
+
+LOWEST_SALARY
+-------------
+        45000
+
+
+SQL> select dept,count(*) as no_employee
+  2  from emp group by dept;
+
+DEPT  NO_EMPLOYEE
+----- -----------
+cse             2
+it              2
+ece             2
+
+
+SQL> select dept,avg(salary) as average_salary from emp group by dept
+  2  having avg(salary)>40000;
+
+DEPT  AVERAGE_SALARY
+----- --------------
+cse            47500
+it             55000
+ece            47500
+
+SQL> select dept,count(*) as no_of_employee,avg(salary) as average_salary,max(salary) as highest_salary from emp
+  2  group by dept;
+
+DEPT  NO_OF_EMPLOYEE AVERAGE_SALARY HIGHEST_SALARY
+----- -------------- -------------- --------------
+cse                2          47500          50000
+it                 2          55000          55000
+ece                2          47500          50000
+
+SQL> create table students
+  2  (
+  3  stu_id number(5),
+  4  stu_name varchar2(30),
+  5  dept varchar2(5),
+  6  marks number(2)
+  7  );
+
+Table created.
+
+SQL> insert into students values (101,'vyshnavi','cse',90);
+
+1 row created.
+
+SQL> insert into students values (102,'ravi','ece',80);
+
+1 row created.
+
+SQL> insert into students values(103,'bala','it',85);
+
+1 row created.
+
+SQL> insert into students values(104,'kavi','cse',85);
+
+1 row created.
+
+SQL> create view topper_view
+  2  as select * from students;
+
+View created.
+
+SQL> select * from topper_view;
+
+    STU_ID STU_NAME                       DEPT       MARKS
+---------- ------------------------------ ----- ----------
+       101 vyshnavi                       cse           90
+       102 ravi                           ece           80
+       103 bala                           it            85
+       104 kavi                           cse           85
+
+SQL> insert into students values(201,'divya','it',85);
+
+1 row created.
+
+SQL> create sequence stu_seq
+  2  start with 201
+  3  increment by 2;
+
+Sequence created.
+
+SQL> insert into students values(stud_seq.nextval,'ramu','ece',89);
+
+1 row created.
+
+SQL> select * from students;
+
+    STU_ID STU_NAME                       DEPT       MARKS
+---------- ------------------------------ ----- ----------
+       101 vyshnavi                       cse           90
+       102 ravi                           ece           80
+       103 bala                           it            85
+       104 kavi                           cse           85
+       201 divya                          it            85
+       108 ramu                           ece           89
+
+6 rows selected.
+
+SQL> insert into students values(stu_seq.nextval,'ramu','ece',89);
+
+1 row created.
+
+SQL> select * from students;
+
+    STU_ID STU_NAME                       DEPT       MARKS
+---------- ------------------------------ ----- ----------
+       101 vyshnavi                       cse           90
+       102 ravi                           ece           80
+       103 bala                           it            85
+       104 kavi                           cse           85
+       201 divya                          it            85
+       108 ramu                           ece           89
+       201 ramu                           ece           89
+
+7 rows selected.
+
+SQL> create index idx_stu_dept on students(dept);
+
+Index created.
+
+
+SQL> select index_name,table_name,status
+  2  from user_indexes
+  3  where index_name= 'idx_stu_dept';
+
+no rows selected
+
+SQL> insert into students values(1,'geetha','cse',90);
+
+1 row created.
+
+SQL> savepoint sp1;
+
+Savepoint created.
+
+SQL> select * from students;
+
+    STU_ID STU_NAME                       DEPT       MARKS
+---------- ------------------------------ ----- ----------
+       101 vyshnavi                       cse           90
+       102 ravi                           ece           80
+       103 bala                           it            85
+       104 kavi                           cse           85
+       201 divya                          it            85
+       108 ramu                           ece           89
+       201 ramu                           ece           89
+         1 geetha                         cse           90
+
+8 rows selected.
+
+SQL> insert into students values(2,'keerthi','ece',70);
+
+1 row created.
+
+SQL> rollback to sp1;
+
+Rollback complete.
+
+SQL> select * from students;
+
+    STU_ID STU_NAME                       DEPT       MARKS
+---------- ------------------------------ ----- ----------
+       101 vyshnavi                       cse           90
+       102 ravi                           ece           80
+       103 bala                           it            85
+       104 kavi                           cse           85
+       201 divya                          it            85
+       108 ramu                           ece           89
+       201 ramu                           ece           89
+         1 geetha                         cse           90
+
+8 rows selected.
+
+SQL> commit;
+
+Commit complete.
+
+SQL>
